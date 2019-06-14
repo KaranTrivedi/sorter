@@ -10,9 +10,14 @@ import os, shutil, pwd, grp, time, datetime
 from unrar import rarfile
 import configparser
 
-src = '/home/mrmxyzptlyk/shows/downloads/'
-dst = '/home/mrmxyzptlyk/shows/new/'
-srt = '/home/mrmxyzptlyk/shows/sorting/'
+src = os.path.expanduser("~") + '/shows/downloads/'
+dst = os.path.expanduser("~") + '/shows/new/'
+srt = os.path.expanduser("~") + '/shows/sorting/'
+dat = os.path.expanduser("~") + '/python/sorter/data/processed.txt'
+
+data_file = open(dat,"a")
+data_file = open(“testfile.text”, “r”)
+data_list = data_file.read().split("\n")
 
 uid = 1000
 gid = 1000
@@ -60,8 +65,13 @@ def mover(folder):
     for foldername,subfolders,filenames in os.walk(folder):
         for filename in filenames:
             if filename.endswith('.mkv') or filename.endswith('.flv') or filename.endswith('.mov') or filename.endswith('.mp4'):
-                if filename not in os.listdir(dst) and filename not in os.listdir(srt):
+                if filename not in os.listdir(dst) and filename not in os.listdir(srt) and filename not in data_list:
                     logger.info('Moving %s...' % (filename))
+                    #write to file.
+                    data_file = open(dat,"a")
+                    data_file.write(filename)
+                    data_file.close()
+                    
                     src_file = foldername + '/' + filename
                     dst_file=dst + '/' + filename
                     shutil.copyfile(src_file,dst_file)
