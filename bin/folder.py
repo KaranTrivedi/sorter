@@ -15,9 +15,10 @@ dst = os.path.expanduser("~") + '/shows/new/'
 srt = os.path.expanduser("~") + '/shows/sorting/'
 dat = os.path.expanduser("~") + '/python/sorter/data/processed.txt'
 
-data_file = open(dat,"a")
-data_file = open(“testfile.text”, “r”)
-data_list = data_file.read().split("\n")
+data_file = open(dat, "r")
+data_list = data_file.read().split("\n") + os.listdir(srt)
+
+print(data_list)
 
 uid = 1000
 gid = 1000
@@ -69,7 +70,7 @@ def mover(folder):
                     logger.info('Moving %s...' % (filename))
                     #write to file.
                     data_file = open(dat,"a")
-                    data_file.write(filename)
+                    data_file.write(filename + "\n")
                     data_file.close()
                     
                     src_file = foldername + '/' + filename
