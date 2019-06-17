@@ -19,8 +19,14 @@ logging.basicConfig(filename=config['log']['filename'],format='%(asctime)s::%(le
 logger = logging.getLogger('sorter')
 logger.setLevel(config['log']['level'])
 
+#Filepaths
 src = "/home/mrmxyzptlyk/shows/downloads/"
+dst = "/home/mrmxyzptlyk/shows/new/"
 showList = []
+
+#Set mrmxyzptlyk permissions.
+uid = 1000
+gid = 1000
 
 class Watcher:
     src = "/home/mrmxyzptlyk/shows/downloads/"
@@ -55,23 +61,45 @@ class Handler(FileSystemEventHandler):
             new_asset = event.src_path.split("/")[5]
             if new_asset not in showList:
                 showList.append(new_asset)
-                
                 logger.info("Received created event: %s" % new_asset)
-    
-                #call script to untar. 
-                #cmd = 'python3 /home/mrmxyzptlyk/python/sorter/bin/un.py ' + new_asset
-                cmd = 'python3 ~/python/sorter/bin/folder.py'
-                
-                p = subprocess.Popen(cmd,  shell=True)
-                #Wait for proc to return. Then run next. 
-                p.communicate()
+                #start_run()
+                #extracter(src + new_asset)
     
         #elif event.event_type == 'modified':
         #    # Taken any action here when a file is modified.
         #    print("Received modified event - %s." % event.src_path)
 
+def extracter(loc):
+    #If file, move else look for .video extention, else look for rar.
+    #Extract, write to file.
+
+    if loc is os.path.isfile():
+        logger.info('Moving %s...' % (loc))
+        src_file = loc.split("/")[-1]
+        dst_file=dst + '/' + src_file
+        shutil.copyfile(loc,dst_file)
+    else:
+        folder = os.path.abspath(loc)
+        for foldername,subfolders,filenames in os.walk(folder):
+            for filename in filenames:
+                if filename.endswith('.mkv') or filename.endswith('.flv') or filename.endswith('.mov') or filename.endswith('.mp4'):
+                    logger.info('Moving %s...' % (filename))
+        src_file = loc.split("/")[-1]
+        dst_file=dst + '/' + src_file
+        shutil.copyfile(loc,dst_file)
+
+        
+
+def start_run():
+    #Call the unrarer script.
+    cmd = 'python3 /home/mrmxyzptlyk/python/sorter/bin/folder.py'
+    p = subprocess.Popen(cmd,  shell=True)
+    #Wait for proc to return. Then run next.
+    p.communicate()
 
 def main():
+    #start_run()
+
     w = Watcher()
     w.run()
 

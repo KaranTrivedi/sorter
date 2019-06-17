@@ -10,15 +10,18 @@ import os, shutil, pwd, grp, time, datetime
 from unrar import rarfile
 import configparser
 
-src = os.path.expanduser("~") + '/shows/downloads/'
-dst = os.path.expanduser("~") + '/shows/new/'
-srt = os.path.expanduser("~") + '/shows/sorting/'
-dat = os.path.expanduser("~") + '/python/sorter/data/processed.txt'
+#homedir = os.path.expanduser("~")
+homedir = "/home/mrmxyzptlyk"
+
+src = homedir + '/shows/downloads/'
+dst = homedir + '/shows/new/'
+srt = homedir + '/shows/sorting/'
+dat = homedir + '/python/sorter/data/processed.txt'
 
 data_file = open(dat, "r")
 data_list = data_file.read().split("\n") + os.listdir(srt)
 
-print(data_list)
+#print(data_list)
 
 uid = 1000
 gid = 1000
@@ -109,6 +112,7 @@ def main():
     unrarer(src)
     mover(dst)
     move_old()
+    os.chown(config['log']['filename'],uid,gid)
 
 if __name__ == "__main__":
     main()
